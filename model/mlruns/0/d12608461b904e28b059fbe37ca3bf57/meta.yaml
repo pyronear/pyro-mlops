@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/gaetanbrison/Documents/GitHub/NYU/pyro-mlops/model/mlruns/0/d12608461b904e28b059fbe37ca3bf57/artifacts
+end_time: 1685203303755
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: d12608461b904e28b059fbe37ca3bf57
+run_name: skittish-snail-328
+run_uuid: d12608461b904e28b059fbe37ca3bf57
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685203298159
+status: 3
+tags: []
+user_id: gaetanbrison
