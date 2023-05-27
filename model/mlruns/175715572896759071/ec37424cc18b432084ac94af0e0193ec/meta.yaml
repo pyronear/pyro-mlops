@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/gaetanbrison/Documents/GitHub/NYU/pyro-mlops/model/mlruns/175715572896759071/ec37424cc18b432084ac94af0e0193ec/artifacts
+end_time: 1685226486463
+entry_point_name: ''
+experiment_id: '175715572896759071'
+lifecycle_stage: active
+run_id: ec37424cc18b432084ac94af0e0193ec
+run_name: unequaled-elk-629
+run_uuid: ec37424cc18b432084ac94af0e0193ec
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685224170727
+status: 3
+tags: []
+user_id: gaetanbrison

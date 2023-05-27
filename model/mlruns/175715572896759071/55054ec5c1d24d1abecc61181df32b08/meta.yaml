@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/gaetanbrison/Documents/GitHub/NYU/pyro-mlops/model/mlruns/175715572896759071/55054ec5c1d24d1abecc61181df32b08/artifacts
+end_time: 1685223120591
+entry_point_name: ''
+experiment_id: '175715572896759071'
+lifecycle_stage: active
+run_id: 55054ec5c1d24d1abecc61181df32b08
+run_name: rogue-crow-159
+run_uuid: 55054ec5c1d24d1abecc61181df32b08
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685222989073
+status: 3
+tags: []
+user_id: gaetanbrison

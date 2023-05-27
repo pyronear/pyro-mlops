@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/gaetanbrison/Documents/GitHub/NYU/pyro-mlops/model/mlruns/175715572896759071/766f9775da0c4b74bc16fdad94a3443e/artifacts
+end_time: 1685230071817
+entry_point_name: ''
+experiment_id: '175715572896759071'
+lifecycle_stage: active
+run_id: 766f9775da0c4b74bc16fdad94a3443e
+run_name: luminous-foal-42
+run_uuid: 766f9775da0c4b74bc16fdad94a3443e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685227450191
+status: 3
+tags: []
+user_id: gaetanbrison

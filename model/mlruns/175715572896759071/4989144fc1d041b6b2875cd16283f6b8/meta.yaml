@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/gaetanbrison/Documents/GitHub/NYU/pyro-mlops/model/mlruns/175715572896759071/4989144fc1d041b6b2875cd16283f6b8/artifacts
+end_time: 1685227440224
+entry_point_name: ''
+experiment_id: '175715572896759071'
+lifecycle_stage: active
+run_id: 4989144fc1d041b6b2875cd16283f6b8
+run_name: debonair-foal-372
+run_uuid: 4989144fc1d041b6b2875cd16283f6b8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685227359829
+status: 3
+tags: []
+user_id: gaetanbrison

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/gaetanbrison/Documents/GitHub/NYU/pyro-mlops/model/mlruns/175715572896759071/2f2d9300e9994f148cfe7b63a94fa459/artifacts
+end_time: 1685222739478
+entry_point_name: ''
+experiment_id: '175715572896759071'
+lifecycle_stage: active
+run_id: 2f2d9300e9994f148cfe7b63a94fa459
+run_name: skittish-hen-437
+run_uuid: 2f2d9300e9994f148cfe7b63a94fa459
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685222739457
+status: 4
+tags: []
+user_id: gaetanbrison

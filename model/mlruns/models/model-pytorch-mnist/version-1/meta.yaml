@@ -1,0 +1,13 @@
+aliases: []
+creation_timestamp: 1685223336269
+current_stage: None
+description: ''
+last_updated_timestamp: 1685223336269
+name: model-pytorch-mnist
+run_id: 0edb49fac2ab462c85069755fbe458d5
+run_link: ''
+source: file:///Users/gaetanbrison/Documents/GitHub/NYU/pyro-mlops/model/mlruns/0/0edb49fac2ab462c85069755fbe458d5/artifacts/model
+status: READY
+status_message: null
+user_id: null
+version: 1
