@@ -1,6 +1,0 @@
-artifact_location: file:///Users/gaetanbrison/Documents/GitHub/NYU/pyro-mlops/model/mlruns/175715572896759071
-creation_time: 1685222739265
-experiment_id: '175715572896759071'
-last_update_time: 1685222739265
-lifecycle_stage: active
-name: mnist_fashion_experiment
