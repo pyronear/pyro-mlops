@@ -1,9 +1,0 @@
-name: experiment
-
-python_env: python_env.yaml
-
-entry_points:
-  main:
-    parameters:
-      n_epochs: {type: int, default: 5}
-    command: "python ml_torch.py {n_epochs}"

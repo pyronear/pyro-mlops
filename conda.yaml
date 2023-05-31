@@ -1,0 +1,17 @@
+name: tutorial
+channels:
+  - defaults
+
+dependencies:
+  - numpy>=1.14.3
+  - pandas>=1.0.0
+  - pytorch
+  - cloudpickle==1.6.0
+  - torchvision
+  - pip
+  - pip:
+    - mlflow==2.3.2
+    - dvc==2.58.1
+  
+
+  

@@ -1,25 +1,22 @@
+#1
+import os
+import sys
+import time
+import logging
+from urllib.parse import urlparse
+
+#2
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
 from mlflow.models.signature import infer_signature
-from urllib.parse import urlparse
-import sys
-#import lightning as L
-import torch
-import time
-#from lightning.pytorch.callbacks import EarlyStopping, LearningRateMonitor, ModelCheckpoint
-# try:
-#     from torchmetrics.functional import accuracy
-# except ImportError:
-#     from pytorch_lightning.metrics.functional import accuracy
-
 import mlflow.pytorch
 from mlflow import MlflowClient
 import mlflow
 
-import logging
+
 
 #enable debug logging, and the full traceback will be displayed, including the detailed error message
 logging.basicConfig(level=logging.WARN)
@@ -70,47 +67,11 @@ def log_scalar(name, value, step):
     """Log a scalar value to both MLflow and TensorBoard"""
     mlflow.log_metric(name, value, step=step)
 
-def train_model(n_epochs,model,criterion,optimizer):
-    # Train the model
-    for epoch in range(n_epochs):
-        running_loss = 0.0
-        for i, data in enumerate(trainloader, 0):
-            inputs, labels = data
-
-            optimizer.zero_grad()
-
-            outputs = model(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-            running_loss += loss.item()
-            if i % 200 == 199:
-                print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 200))
-                running_loss = 0.0
-            
-            log_scalar('loss', running_loss/ 200, epoch)
-    print('Finished training')
-
-    # Test the model
-    correct = 0
-    total = 0
-    with torch.no_grad():
-        for data in testloader:
-            images, labels = data
-            outputs = model(images)
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-    accuracy = 100 * correct / total
-    print('Accuracy on the test set: %.2f %%' % accuracy)
-    return accuracy
-
 
 #mlflow start
 
 # defining a new experiment
-experiment_name = 'ML_TORCH'
+experiment_name = 'ML_TORCH1'
 
 # returns experiment ID
 tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
@@ -127,6 +88,7 @@ timestamp = int(time.time())
 #model_dir = f"/mlflow_torch/models/{timestamp}"
 model_dir = f"ml_torch/models/{timestamp}"
 
+data_dir = "data/FashionMNIST/raw"
 if __name__ == "__main__":
 
     # Number of epochs to train for 
@@ -135,7 +97,7 @@ if __name__ == "__main__":
 
 
     # log the model
-    with mlflow.start_run(experiment_id=exp_id, run_name = 'fourth_pytorch_run') as run:
+    with mlflow.start_run(experiment_id=exp_id, run_name = 'first_pytorch_run') as run:
         # adding tags to the run
         mlflow.set_tag('Description','Simple MNIST pytorch Model')
         mlflow.set_tags({'ProblemType': 'Classification', 'ModelLibrary': 'pytorch'})
@@ -147,9 +109,43 @@ if __name__ == "__main__":
         # Define the loss function and optimizer
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+        
+        # Train the model
+        for epoch in range(n_epochs):
+            running_loss = 0.0
+            for i, data in enumerate(trainloader, 0):
+                inputs, labels = data
 
-        accuracy = train_model(n_epochs,model,criterion,optimizer)
+                optimizer.zero_grad()
 
+                outputs = model(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+
+                running_loss += loss.item()
+                if i % 200 == 199:
+                    print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 200))
+                    running_loss = 0.0
+                
+                log_scalar('loss', running_loss/ 200, epoch)
+        print('Finished training')
+
+        # Test the model
+        correct = 0
+        total = 0
+        with torch.no_grad():
+            for data in testloader:
+                images, labels = data
+                outputs = model(images)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
+        accuracy = 100 * correct / total
+        print('Accuracy on the test set: %.2f %%' % accuracy)
+
+        if os.path.exists(data_dir):
+            mlflow.log_artifact(data_dir)
         # logging parameters 
         mlflow.log_param("epochs", n_epochs)
 
@@ -163,3 +159,4 @@ if __name__ == "__main__":
         mlflow.pytorch.save_model(model, path = model_dir)
         
         #mlflow.pytorch.save_model(model, pytorch_model_path)
+        mlflow.end_run()
