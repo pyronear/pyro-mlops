@@ -51,11 +51,7 @@ dvc remote add -d remote_storage path/to/your/dvc_remote
 dvc add copies the specified directory or files to .dvc/cache or shared_cache/you/specified, creates .dvc files for each tracked folder or file and adds them to .gitignore
 * .dvc and other files are tracked with git add --all
 
-- Track the data directory with DVC:
- ```sh
-dvc add data
-dvc push
-```
+
 
 #### 3️⃣ MLflow
 MLflow helps in tracking experiments, packaging code into reproducible runs, and sharing and deploying models. You can find more information about MLflow. We have used MLflow to track the experiments and save parameters and metrics used for a particular training. We can include or change parameters according to our requirements
