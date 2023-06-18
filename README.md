@@ -69,9 +69,9 @@ It will host you on the local computer. compare model seeing metrics
 
 
 ##### 3️.2 Unmanaged without MLflow CLI
-Run the standard main function from the command-line.
+Run the standard main function from the command-line in the model path
  ```sh
-python "filename".py <parameter1>
+python model_pytorch_lightning_mnist.py 
 ```
 
 ##### 3️.3 MLflow CLI - mlflow run
@@ -79,7 +79,7 @@ Use the MLproject file. We get more control over an MLflow Project by adding an 
 
 - mlflow run local
  ```sh
-mlflow run "filename" -P <parameter1>=<value>
+mlflow run "model_pytorch_lightning_mnist" -P n_epochs=5
 ```
 
 - mlflow run github
