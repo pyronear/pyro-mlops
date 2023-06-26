@@ -11,3 +11,7 @@ mlflow
 pandas
 torch
 torchvision
+black
+mypy
+isort
+flake8
