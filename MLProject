@@ -1,0 +1,9 @@
+name: tutorial
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      n_epochs: {type: int, default: 5}
+    command: "python ml_torch_mnist.py {n_epochs}"

@@ -1,135 +1,158 @@
+#1
+import os
+import sys
+import time
+import logging
+from urllib.parse import urlparse
+
+#2
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms as transforms
+from mlflow.models.signature import infer_signature
+import mlflow.pytorch
+from mlflow import MlflowClient
 import mlflow
-from pytorch_lightning import LightningModule, Trainer
-from pytorch_lightning.loggers import MLFlowLogger
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-import dvc.api
 
-# Set random seeds for reproducibility
-torch.manual_seed(42)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
+#enable debug logging, and the full traceback will be displayed, including the detailed error message
+logging.basicConfig(level=logging.WARN)
+#logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
-# Define the data paths using DVC
-train_data_url = "dvc://data/train-images-idx3-ubyte.gz"
-train_labels_url = "dvc://data/train-labels-idx1-ubyte.gz"
-test_data_url = "dvc://data/t10k-images-idx3-ubyte.gz"
-test_labels_url = "dvc://data/t10k-labels-idx1-ubyte.gz"
 
-# Load MNIST Fashion dataset
+# Define the transformation to normalize the data
 transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-# Create train and test datasets
-train_dataset = torchvision.datasets.MNIST(
-    root="./data",
-    train=True,
-    transform=transform,
-    download=True
-)
+# Load the MNIST Fashion dataset
+trainset = torchvision.datasets.FashionMNIST(root='./data', train=True, download=True, transform=transform)
+testset = torchvision.datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform)
 
-test_dataset = torchvision.datasets.MNIST(
-    root="./data",
-    train=False,
-    transform=transform,
-    download=True
-)
+# Define the data loaders
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True, num_workers=0)
+testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=False, num_workers=0)
 
-# Define the neural network architecture using LightningModule
-class Net(LightningModule):
-    def __init__(self, learning_rate=0.001):
-        super(Net, self).__init__()
-        self.fc1 = nn.Linear(784, 256)
-        self.relu = nn.ReLU()
-        self.fc2 = nn.Linear(256, 10)
-        self.learning_rate = learning_rate
-    
+
+
+# Define the model 
+class FashionClassifier(nn.Module):
+    def __init__(self):
+        super(FashionClassifier, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=1)
+        self.relu1 = nn.ReLU()
+        self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
+        self.relu2 = nn.ReLU()
+        self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.fc = nn.Linear(7 * 7 * 64, 10)
+
     def forward(self, x):
-        x = x.view(x.size(0), -1)
-        x = self.fc1(x)
-        x = self.relu(x)
-        x = self.fc2(x)
+        x = self.conv1(x)
+        x = self.relu1(x)
+        x = self.pool1(x)
+        x = self.conv2(x)
+        x = self.relu2(x)
+        x = self.pool2(x)
+        x = x.view(-1, 7 * 7 * 64)
+        x = self.fc(x)
         return x
 
-    def training_step(self, batch, batch_idx):
-        images, labels = batch
-        outputs = self(images)
-        loss = nn.CrossEntropyLoss()(outputs, labels)
-        self.log("train_loss", loss, prog_bar=True)
-        return loss
+def log_scalar(name, value, step):
+    """Log a scalar value to both MLflow and TensorBoard"""
+    mlflow.log_metric(name, value, step=step)
 
-    def configure_optimizers(self):
-        return optim.Adam(self.parameters(), lr=self.learning_rate)
 
-# Define the hyperparameters
-batch_sizes = [128, 256]
-num_epochs_list = [5, 10]
-learning_rates = [0.001, 0.005]
+#mlflow start
 
-# Perform hyperparameter search
-for batch_size in batch_sizes:
-    for num_epochs in num_epochs_list:
-        for learning_rate in learning_rates:
-            # Create an instance of the neural network model
-            model = Net(learning_rate=learning_rate)
+# defining a new experiment
+experiment_name = 'ML_TORCH1'
 
-            # Create data loaders
-            train_loader = torch.utils.data.DataLoader(
-                dataset=train_dataset,
-                batch_size=batch_size,
-                shuffle=True
-            )
+# returns experiment ID
+tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+try:
+    # creating a new experiment
+    exp_id = mlflow.create_experiment(name=experiment_name)
+except Exception as e:
+    exp_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
 
-            test_loader = torch.utils.data.DataLoader(
-                dataset=test_dataset,
-                batch_size=batch_size,
-                shuffle=False
-            )
+#CONFIRM THIS
+#signature = infer_signature(trainset, testset)
+#so as to get different pytorch model
+timestamp = int(time.time()) 
+#model_dir = f"/mlflow_torch/models/{timestamp}"
+model_dir = f"ml_torch/models/{timestamp}"
 
-            # Define a PyTorch Lightning logger for MLflow
-            mlflow_logger = MLFlowLogger(experiment_name="mnist_fashion_experiment")
+data_dir = "data/FashionMNIST/raw"
+if __name__ == "__main__":
 
-            # Train the model using PyTorch Lightning
-            trainer = Trainer(
-                max_epochs=num_epochs,
-                logger=mlflow_logger
-            )
-            trainer.fit(model, train_loader)
+    # Number of epochs to train for 
+    #   n_epochs = 10
+    n_epochs = int(sys.argv[1]) if len(sys.argv) > 1 else 5
 
-            # Evaluate the model on the test set
-            model.eval()
-            predictions = []
-            labels = []
+    # log the model
+    with mlflow.start_run(experiment_id=exp_id, run_name = 'first_pytorch_run') as run:
+        # adding tags to the run
+        mlflow.set_tag('Description','Simple MNIST pytorch Model')
+        mlflow.set_tags({'ProblemType': 'Classification', 'ModelLibrary': 'pytorch'})
 
-            with torch.no_grad():
-                for images, target_labels in test_loader:
-                    outputs = model(images)
-                    _, predicted = torch.max(outputs.data, 1)
-                    predictions.extend(predicted.cpu().numpy())
-                    labels.extend(target_labels.cpu().numpy())
+        # Create an instance of the model
+        model = FashionClassifier()
 
-            # Compute evaluation metrics
-            accuracy = accuracy_score(labels, predictions)
-            precision = precision_score(labels, predictions, average='weighted')
-            recall = recall_score(labels, predictions, average='weighted')
-            f1 = f1_score(labels, predictions, average='weighted')
+        # Define the loss function and optimizer
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+        
+        # Train the model
+        for epoch in range(n_epochs):
+            running_loss = 0.0
+            for i, data in enumerate(trainloader, 0):
+                inputs, labels = data
 
-            # Log the evaluation metrics to MLflow
-            mlflow_logger.log_metrics({
-                "batch_size": batch_size,
-                "num_epochs": num_epochs,
-                "learning_rate": learning_rate,
-                "test_accuracy": accuracy,
-                "test_precision": precision,
-                "test_recall": recall,
-                "test_f1": f1
-            })
+                optimizer.zero_grad()
 
-            # Save the model with the hyperparameters as the run name
-            mlflow.pytorch.log_model(model, f"model_{batch_size}_{num_epochs}_{learning_rate}")
+                outputs = model(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+
+                running_loss += loss.item()
+                if i % 200 == 199:
+                    print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 200))
+                    running_loss = 0.0
+                
+                log_scalar('loss', running_loss/ 200, epoch)
+        print('Finished training')
+
+        # Test the model
+        correct = 0
+        total = 0
+        with torch.no_grad():
+            for data in testloader:
+                images, labels = data
+                outputs = model(images)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
+        accuracy = 100 * correct / total
+        print('Accuracy on the test set: %.2f %%' % accuracy)
+
+        if os.path.exists(data_dir):
+            mlflow.log_artifact(data_dir)
+        # logging parameters 
+        mlflow.log_param("n_epochs", n_epochs)
+
+        # logging metrics
+        mlflow.log_metric("accuracy", accuracy)
+        
+        #model name
+        mlflow.pytorch.log_model(model, "models")
+
+        #mlflow.pytorch.log_model(model, "models",signature=signature)
+        mlflow.pytorch.save_model(model, path = model_dir)
+        
+        #mlflow.pytorch.save_model(model, pytorch_model_path)
+        mlflow.end_run()

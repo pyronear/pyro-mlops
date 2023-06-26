@@ -1,0 +1,13 @@
+cloudpickle
+dvc
+dvc-data
+dvc-http
+dvc-objects
+dvc-render
+dvc-studio-client
+dvc-task
+gunicorn
+mlflow
+pandas
+torch
+torchvision
