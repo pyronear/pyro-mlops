@@ -17,7 +17,8 @@ gdown --fuzzy https://drive.google.com/file/d/12gGuFd3aQmtPXP-cbBRjsciWLtpFNBB-/
 Unzip dataset
 
 ```shell
-unzip DS-18d12de1.zip
+mkdir datasets
+unzip DS-18d12de1.zip -d datasets/
 ```
 
 update dataset path in DS-18d12de1/data.yaml
@@ -25,7 +26,7 @@ update dataset path in DS-18d12de1/data.yaml
 ### Train model
 
 ```shell
-yolo train cfg=model/yolo/yolo_config.yaml  data=DS-18d12de1/data.yaml model=yolov8n.pt  
+yolo train cfg=model/yolo/yolo_config.yaml  data=datasets/DS-18d12de1/data.yaml model=yolov8n.pt
 ```
 
 
