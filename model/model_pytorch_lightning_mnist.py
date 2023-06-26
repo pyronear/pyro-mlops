@@ -84,7 +84,6 @@ model_dir = f"ml_torch/models/{timestamp}"
 
 data_dir = "data/FashionMNIST/raw"
 if __name__ == "__main__":
-
     # Number of epochs to train for
     #   n_epochs = 10
     n_epochs = int(sys.argv[1]) if len(sys.argv) > 1 else 5
