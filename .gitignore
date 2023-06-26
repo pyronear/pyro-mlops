@@ -116,3 +116,13 @@ test/fixtures/videos/
 *.onnx
 # Release
 conda-dist/
+
+# Datasets
+datasets
+*.zip
+
+# Train files
+runs/
+*.pt
+
+
