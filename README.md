@@ -1,4 +1,34 @@
 # Pytorch + DVC + MLFlow - Documentation 🚀
+
+## Train yolo wildfire detector using ultralytics
+
+### Install dependencies
+
+```shell
+pip install -r model/yolo/requirements.txt
+```
+
+### Download dataset
+
+```shell
+gdown --fuzzy https://drive.google.com/file/d/12gGuFd3aQmtPXP-cbBRjsciWLtpFNBB-/view?usp=sharing
+```
+
+Unzip dataset
+
+```shell
+unzip DS-18d12de1.zip
+```
+
+update dataset path in DS-18d12de1/data.yaml
+
+### Train model
+
+```shell
+yolo train cfg=model/yolo/yolo_config.yaml  data=DS-18d12de1/data.yaml model=yolov8n.pt  
+```
+
+
 ## FashionMNIST Classification with PyTorch
 
 This repository contains an example of training a deep learning model on the FashionMNIST dataset using PyTorch. It demonstrates how to use DVC for tracking the Data versions and MLflow for tracking the model versions and performances.
