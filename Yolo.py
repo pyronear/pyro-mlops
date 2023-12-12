@@ -11,7 +11,7 @@ from IPython.display import display, Image
 # Load and display an image
 # Parameters:
 #    path (str): Path to the image file
-path = r"./datasets/pyronear/images/train/aiformankind_v1_000014.jpg"
+path = r"./datasets/datasets/pyronear/images/train/aiformankind_v1_000014.jpg"
 img = Image(path, width=500, height=300)
 display(img)
 
@@ -38,11 +38,12 @@ data_params["names"]
 
 # Print chosen YOLO parameters
 print("YOLOv8 PARAMETERS:")
-print(f"model: {yolo_params['model_type']}")
+print(f"""model: {yolo_params['model_type']}""")
 print(f"imgsz: {yolo_params['imgsz']}")
 print(f"lr0: {yolo_params['learning_rate']}")
 print(f"batch: {yolo_params['batch']}")
 print(f"name: {yolo_params['experiment_name']}")
+print(yolo_params)
 
 # Define the YOLO model
 model = YOLO(yolo_params['model_type'])
@@ -118,10 +119,57 @@ model_registry_version = mlflow.register_model(logged_model, 'pyronear_dl_model'
 print(f'Model Name: {model_registry_version.name}')
 print(f'Model Version: {model_registry_version.version}')
 
+
+
+## Selection of the top model and uploading the artefact on AWS
+
+def find_and_concatenate_csvs(root_dir, output_file):
+    all_dfs = []  # List to store all dataframes
+
+    for root, dirs, files in os.walk(root_dir):
+        for file in files:
+            if file == 'results.csv':
+                path = os.path.join(root, file)
+                print(path)
+                df = pd.read_csv(path)
+                df['Path'] = path  # Add a column with the path
+                all_dfs.append(df)
+
+    # Concatenate all dataframes
+    concatenated_df = pd.concat(all_dfs, ignore_index=True)
+    concatenated_df.to_csv(output_file, index=False)
+    print(f"Concatenated CSV saved as {output_file}")
+    return concatenated_df
+
+# Usage
+root_directory = 'path_to_your_directory'  # Replace with your root directory path
+output_csv_file = 'concatenated_results.csv'  # Output file name
+df = find_and_concatenate_csvs("mlartifacts", output_csv_file)
+df.columns = df.columns.str.replace(' ', '')
+df = df.reset_index(drop=True)
+sorted_df = df.sort_values('metrics/mAP50-95(B)', ascending=False)
+sorted_df.to_csv("test.csv")
+print(sorted_df.head())
+print("Top metrics/mAP50-95(B):  ")
+print("    ")
+print("    ")
+print(list(sorted_df["metrics/mAP50-95(B)"][0:1])[0])
+print("    ")
+print("    ")
+print("Obtained with artefact: ",list(sorted_df["Path"][0:1])[0])
+
+final_model = list(sorted_df["Path"][0:1])[0]
+
+
+
+
 # Command to upload MLflow runs to AWS S3
+#command = "aws s3 cp --recursive mlruns s3://{bucket-name}/output/mlruns --no-sign-request"
 command = "aws s3 cp --recursive mlruns s3://{bucket-name}/output/mlruns --no-sign-request"
+command2 = "aws s3 cp --recursive final_model s3://{bucket-name}/output/artifacts --no-sign-request"
 process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-stdout, stderr = process.communicate()
-print("Output:", stdout.decode('utf-8'))
-print("Error:", stderr.decode('utf-8'))
-print("Return Code:", process.returncode)
+process2 = subprocess.Popen(command2, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+#print("Output:", stdout.decode('utf-8'))
+#print("Error:", stderr.decode('utf-8'))
+#print("Return Code:", process.returncode)
