@@ -14,7 +14,9 @@ module = [ "torchvision.*",
 "torch.*",
 "boto3.*",
 "IPython.*",
-"ultralytics.*", ]
+"ultralytics.*",
+"pandas.*",
+"yaml.*" ]
 ignore_missing_imports = true
 
 
