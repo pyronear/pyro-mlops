@@ -14,13 +14,13 @@ import shutil
 import subprocess
 
 import boto3
-import mlflow  # type: ignore
+import mlflow
 import pandas as pd
 import yaml
 
 # Display an image of the fire detection dataset
 from IPython.display import Image, display
-from ultralytics import YOLO  # type: ignore
+from ultralytics import YOLO
 
 # 02 Define methods used later on
 
