@@ -2,9 +2,8 @@
 Authors: Matéo Lostanlen & Gaëtan Brison
 Date: 22 Dec 2024
 Goal: Yolov8 model trained on Pyronear Dataset with parameters of configuration
- saved thanks to mlflow. This code outputs the artifacts of the top model in aws
+ saved thanks to mlflow. This code outputs the artifacts of the top model in aws.
 """
-
 
 # 01 - Import Libraries
 
