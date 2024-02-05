@@ -1,0 +1,16 @@
+# train and val data as 1) directory: path/images/, 2) file: path/images.txt, or 3) list: [path1/images/, path2/images/]
+
+#path: './pyronear'
+
+train: /home/infres/gbrison/pyro-mlops/model/yolo_v8/datasets/pyronear/images/train
+val: /home/infres/gbrison/pyro-mlops/model/yolo_v8/datasets/pyronear/images/val
+
+# number of classes
+nc: 1
+
+# class names (no label for background since yolo already detects it)
+names:
+  0: smoke
+
+
+

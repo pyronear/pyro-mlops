@@ -1,0 +1,17 @@
+
+# Model configuration file 
+
+model_type: yolov8n.pt 
+pretrained: True
+seed: 0
+imgsz: [640, 480] 
+batch: 16 # number of samples processed at once during training
+epochs: 10
+optimizer: SGD 
+learning_rate: 0.01  # how weights are updated during training
+# project: "./logs"  # If you want to log files into different directory than ./runs/detect  
+project: "./mlruns"  # If you want to log files into different directory than ./runs/detect  
+
+
+# MLFlow parameters
+experiment_name: 'yolov8s_exp_v0'

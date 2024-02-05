@@ -9,12 +9,16 @@ check_untyped_defs = true
 implicit_reexport = false
 
 [[tool.mypy.overrides]]
-module = [
-    "torchvision.*",
-    "mlflow.*",
-    "torch.*",
-]
+module = [ "torchvision.*",
+"mlflow.*",
+"torch.*",
+"boto3.*",
+"IPython.*",
+"ultralytics.*",
+"pandas.*",
+"yaml.*" ]
 ignore_missing_imports = true
+
 
 [tool.isort]
 line_length = 120

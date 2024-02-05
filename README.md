@@ -1,122 +1,111 @@
-# Pytorch + DVC + MLFlow - Documentation 🚀
 
-## Train yolo wildfire detector using ultralytics
 
-### Install dependencies
+# Pyronear - Machine Learning Pipeline for Wildfire Detection 🚀
 
-```shell
-pip install -r model/yolo/requirements.txt
-```
+## Train YOLO Wildfire Detector Using Ultralytics
 
-### Download dataset
+This repository showcases how to train a YOLOv8 deep learning model on the Pyronear dataset. Key features include the use of DVC for data versioning and MLflow for model versioning and performance tracking, with cloud storage for data.
 
-```shell
-gdown --fuzzy https://drive.google.com/file/d/12gGuFd3aQmtPXP-cbBRjsciWLtpFNBB-/view?usp=sharing
-```
+![ML flow](https://i.postimg.cc/mrsjc7yY/mlflow.png)
 
-Unzip dataset
+### Prerequisites
+- Python 3.x
+- Pip package manager
 
-```shell
-mkdir datasets
-unzip DS-18d12de1.zip -d datasets/
-```
+### 01. Install Dependencies 📦
 
-update dataset path in DS-18d12de1/data.yaml
-
-### Train model
+To install necessary libraries, run:
 
 ```shell
-yolo train cfg=model/yolo/yolo_config.yaml  data=datasets/DS-18d12de1/data.yaml model=yolov8n.pt
+pip install -r requirements.txt
 ```
 
+### 02. Download and Prepare Dataset 📥
 
-## FashionMNIST Classification with PyTorch
+1. Download the dataset using the following command:
 
-This repository contains an example of training a deep learning model on the FashionMNIST dataset using PyTorch. It demonstrates how to use DVC for tracking the Data versions and MLflow for tracking the model versions and performances.
+    ```shell
+    gdown --fuzzy https://drive.google.com/file/d/12gGuFd3aQmtPXP-cbBRjsciWLtpFNBB-/view?usp=sharing
+    ```
 
-![Pipeline](https://i.postimg.cc/Y2WZj4qQ/Screenshot-2023-06-07-at-17-20-47.png)
+2. Unzip and organize the dataset:
 
+    ```shell
+    mkdir datasets
+    unzip DS-18d12de1.zip -d datasets/
+    ```
 
-## 💽 Data used
+3. Update the dataset path in `data_configuration.yaml`.
 
-The dataset consists of 70,000 grayscale images, with each image being a 28x28 pixel representation. These images are divided into 60,000 training examples and 10,000 testing examples.
+### 03. Data Overview 💽
 
-The Fashion MNIST dataset consists of ten categories or classes. Each class represents a different type of clothing item. The categories are as follows:
-T-shirt / Trouser / Pullover / Dress / Coat / Sandal / Shirt / Sneaker / Bag / Ankle / boot
+The dataset comprises 596 training images and 148 validation images featuring forest landscapes with smoke. Each image (640x480 pixels) is annotated with a bounding box in a corresponding txt file, marking the smoke areas.
 
-These categories cover a diverse range of fashion items, providing a comprehensive dataset for training and evaluating machine learning models in the domain of fashion image classification.
+![Fumes](https://i.postimg.cc/sxPwsrxR/aiformankind-v1-000007.jpg)
 
-## 🤖 Pytorch Model used 
+### 04. Data Version Control (DVC) 🔄
 
-The provided code snippet represents a neural network called "FashionClassifier." It is designed for classifying fashion images into 10 different categories. Let's break down its structure and operations:
+#### 1️⃣ Install DVC:
 
-Architecture:
+Use the same requirements file to install DVC.
 
-- Input Layer: The network expects grayscale images as input with a single channel (1).
-Convolutional Layer 1: It applies a 2D convolution operation with 32 filters, each having a kernel size of 3x3. The stride is set to 1, and the padding is 1 to maintain the spatial dimensions of the input.
-- ReLU Activation 1: A rectified linear unit (ReLU) activation function is applied element-wise to introduce non-linearity after the first convolutional layer.
-- Max Pooling 1: It performs 2x2 max pooling, reducing the spatial dimensions of the input by a factor of 2.
-- Convolutional Layer 2: Similar to the first convolutional layer, this layer applies a 2D convolution with 64 filters, kernel size of 3x3, stride of 1, and padding of 1.
-- ReLU Activation 2: Another ReLU activation is applied after the second convolutional layer.
-- Max Pooling 2: Another 2x2 max pooling operation is performed, further reducing the spatial dimensions.
-- Fully Connected Layer (Output Layer): It reshapes the 2D feature maps into a flat vector by using the view function, making it compatible for feeding into a fully connected layer. The size of this layer is determined by multiplying the dimensions of the feature maps (7x7x64). The output size of this layer is 10, corresponding to the 10 fashion categories to be classified.
+#### 2️⃣ Data Setup:
 
+- Initialize DVC in your workspace:
 
-## ➡️ Steps to run the model using DVC and ML Flow: 
+    ```sh
+    dvc init
+    ```
 
-#### 1️⃣ Install the required packages:
-- pip install -r requirements.txt
+- Set up remote storage (e.g., AWS S3, Google Cloud Storage):
 
-#### 2️⃣ Data Setup
-- Initialize DVC and set up remote storage (if necessary):
- ```sh
-dvc init
-```
-Using dvc init in workspace will initialize a DVC project, including the internal .dvc/ directory
+    ```sh
+    dvc remote add -d remote_storage path/to/your/dvc_remote
+    ```
 
-- Configure DVC remote storage (e.g., AWS S3, Google Cloud Storage):
-this will add data to remote storage
- ```sh
-dvc remote add -d remote_storage path/to/your/dvc_remote
-```
-dvc add copies the specified directory or files to .dvc/cache or shared_cache/you/specified, creates .dvc files for each tracked folder or file and adds them to .gitignore
-* .dvc and other files are tracked with git add --all
+- Track data and configuration files using DVC:
 
+    ```sh
+    dvc add <file_or_directory>
+    git add .dvc/<file_or_directory>.dvc .gitignore
+    ```
 
+### 05. Model Training with YOLOv8 and MLflow Tracking 🤖
 
-#### 3️⃣ MLflow
-MLflow helps in tracking experiments, packaging code into reproducible runs, and sharing and deploying models. You can find more information about MLflow. We have used MLflow to track the experiments and save parameters and metrics used for a particular training. We can include or change parameters according to our requirements
-**Tracked Parameters and Metrics:**
-- Epochs
-- Accuracy
-- Loss
+⚠️ Requires GPU.
 
-##### 3.1 Access the MLflow UI in your browser after running you script:
-Run  the below command
-```sh
+#### 3️⃣ MLflow Setup:
+
+MLflow is used for experiment tracking and model management. Key tracked metrics include epochs, accuracy, and loss.
+
+- Start the MLflow UI:
+
+    ```sh
     mlflow ui
-```
-It will host you on the local computer. compare model seeing metrics
+    ```
 
+- (Optional) Specify a custom port:
 
-##### 3️.2 Unmanaged without MLflow CLI
-Run the standard main function from the command-line in the model path
- ```sh
-python model_pytorch_lightning_mnist.py 
-```
+    ```sh
+    mlflow ui --port <port_number>
+    ```
 
-##### 3️.3 MLflow CLI - mlflow run
-Use the MLproject file. We get more control over an MLflow Project by adding an MLproject file, which is a text file in YAML syntax, to the project’s root directory.
+#### 4️⃣ Training the Model:
 
-- mlflow run local
- ```sh
-mlflow run "model_pytorch_lightning_mnist" -P n_epochs=5
+Execute the training script with specified data and model configurations:
+
+```shell
+python3 train_yolo.py --data_config data_configuration.yaml --model_config model_configuration.yaml
 ```
 
-- mlflow run github
- ```sh
-mlflow run https://github.com/<username>/<filename>.git -P <parameter1>=<value>
+#### 5️⃣ Cloud Storage for Artifacts:
+
+Add AWS credentials to the training script:
+
+```sh
+"s3", aws_access_key_id="your_access_key_id", aws_secret_access_key="your_secret_access_key"
 ```
 
-### Congrats you made it 🎉
- 
+### Congratulations! 🎉
+
+You've successfully set up and run the Pyronear machine learning pipeline for wildfire detection.
